@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 const express = require('express');
 const admin = require('firebase-admin');
 const UserLogin = require('./UserModel'); 
@@ -161,6 +156,7 @@ router.post('/user/report', async (req, res) => {
   }
 });
 
+
 router.post('/user/deleteDate', async (req, res) => {
   const { phone, issueDetails } = req.body;
 
@@ -180,6 +176,7 @@ router.post('/user/deleteDate', async (req, res) => {
     return res.status(500).json({ message: 'Something went wrong', error: error.message });
   }
 });
+
 
 router.post('/user/ban', async (req, res) => {
   const { phone, reason } = req.body;
@@ -201,9 +198,55 @@ router.post('/user/ban', async (req, res) => {
   }
 });
 
+router.post('/user/toggleStatus', async (req, res) => {
+  const { phone, action, reason } = req.body;
+
+  try {
+    const user = await UserLogin.findOne({ phone });
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    switch (action) {
+      case 'delete':
+        if (user.status === 'deleted') {
+          user.status = 'normal';
+          user.deletedDate = null;
+          user.issueDetails = null;
+        } else {
+          user.status = 'deleted';
+          user.deletedDate = new Date();
+          user.issueDetails = reason || 'No details provided';
+        }
+        break;
+
+      case 'ban':
+        if (user.status === 'banned') {
+          user.status = 'normal';
+          user.bannedDate = null;
+          user.bannedReason = null;
+        } else {
+          user.status = 'banned';
+          user.bannedDate = new Date();
+          user.bannedReason = reason || 'No reason provided';
+        }
+        break;
+
+      default:
+        return res.status(400).json({ message: 'Invalid action' });
+    }
+
+    await user.save();
+
+    return res.status(200).json({ message: `User status updated to ${user.status}`, data: user });
+  } catch (error) {
+    return res.status(500).json({ message: 'Something went wrong', error: error.message });
+  }
+});
+
+
 const sendOtpToPhone = async (phone, otp) => {
-  console.log(`Sending OTP: ${otp} to phone: ${phone}`);
   return true;
 };
+
 
 module.exports = router;

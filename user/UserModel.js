@@ -119,7 +119,7 @@ const countryCodes = [
     bannedReason: { type: String, default: null },
     status: {
         type: String,
-        enum: ['active', 'banned', 'deleted'], // Added 'active' as a default status
+        enum: ['active', 'banned', 'deleted','normal'], // Added 'active' as a default status
         default: 'active',
     },
 });
