@@ -22,6 +22,7 @@ const DetailRouter = require('./Details/DetailRouter');
 const OfferRouter = require('./Offer/OfferRouter');
 const DataRouter = require('./SendDataAdmin/DataRouter');
 const UserRouter = require ('./user/UserRouter');
+const BuyerAssistanceRouter = require ('./BuyerAssistance/BuyerAssistanceRouter');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -89,6 +90,7 @@ app.use("/PPC", DetailRouter);
 app.use("/PPC", OfferRouter);
 app.use('/PPC', DataRouter);
 app.use('/PPC', UserRouter);
+app.use('/PPC', BuyerAssistanceRouter)
 
 // 404 Error Handling Middleware
 app.use((req, res, next) => {
